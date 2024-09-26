@@ -1,0 +1,51 @@
+import math
+from collections import Counter
+
+# Define documents in Korean
+documents = {
+    'D1': "고양이는 귀엽다",
+    'D2': "강아지는 귀엽다",
+    'D3': "강아지는 고양이보다 크다"
+}
+
+# Preprocess documents: tokenize
+tokenized_docs = {doc: doc.split() for doc in documents}
+
+# Total number of documents
+N = len(documents)
+
+# Calculate term frequency (TF)
+tf = {}
+for doc, tokens in tokenized_docs.items():
+    token_count = len(tokens)
+    tf[doc] = Counter(tokens)
+    for term in tf[doc]:
+        tf[doc][term] /= token_count
+
+# Calculate document frequency (DF)
+df = Counter()
+for tokens in tokenized_docs.values():
+    unique_terms = set(tokens)
+    for term in unique_terms:
+        df[term] += 1
+
+# Calculate inverse document frequency (IDF)
+idf = {term: math.log(N / df[term]) for term in df}
+
+# Calculate TF-IDF
+tf_idf = {}
+for doc, term_freq in tf.items():
+    tf_idf[doc] = {term: freq * idf.get(term, 0) for term, freq in term_freq.items()}
+
+# Print results
+print("Term Frequency (TF):")
+for doc, terms in tf.items():
+    print(f"{doc}: {terms}")
+
+print("\nInverse Document Frequency (IDF):")
+for term, value in idf.items():
+    print(f"{term}: {value:.3f}")
+
+print("\nTF-IDF:")
+for doc, terms in tf_idf.items():
+    print(f"{doc}: {terms}")
